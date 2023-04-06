@@ -16,12 +16,12 @@ import numpy as np
 
 # Fixing paths
 sys.path.append(os.path.join(
-    os.path.dirname(__file__), '../'))
+  os.path.dirname(__file__), '../'))
 
 # Local imports
 from src.normalization.zscore import ZScore
 from src.metrics.metrics import rmse
-from src.regression.ols import OrdinaryLeastSquares
+from src.regression.gd import LinearRegressionGD
 
 #
 # Import data
@@ -32,17 +32,15 @@ normalizer = ZScore()
 data = normalizer.fit_transform(data)
 
 # Separation
-X = data[:,:-1]
-y = data[:,-1:]
+X = data[:, :-1]
+y = data[:, -1:]
 
 # Model training
-model = OrdinaryLeastSquares()
-model.fit(X, y)
-
-# print(model)
+model = LinearRegressionGD()
+model.fit(X, y, verbatim=True)
 
 # Predict
 y_hat = model.predict(X)
 
 # Test error
-print(f'RMSE: {rmse(y, y_hat)}')
+print(f'RMSE: {rmse(y, y_hat):>13.5}')
