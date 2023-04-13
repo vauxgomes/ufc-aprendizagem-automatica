@@ -25,13 +25,16 @@ class OrdinaryLeastSquares(BaseEstimator, RegressorMixin):
     #
     def fit(self, X, y):
         # Auxiliary
-        N = X.shape[0]
+        n, m = X.shape
 
-        # Adding a column of ones and some noise
-        X_ = np.concatenate((np.ones((N,1)), X), axis=1) + self.noise
+        # Adding a column of ones
+        X_ = np.concatenate((np.ones((n,1)), X), axis=1)
+
+        # Identity matrix of noises
+        noise = np.eye(m+1) * self.noise
 
         # Calculating ŵ
-        self.w_hat = np.linalg.inv(X_.T @ X_) @ X_.T @ y
+        self.w_hat = np.linalg.inv((X_.T @ X_) + noise) @ X_.T @ y
 
     #
     def predict(self, X, y=None):
