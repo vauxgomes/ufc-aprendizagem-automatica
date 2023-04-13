@@ -12,6 +12,10 @@ metrics for this project
 # Imports
 import numpy as np
 
-def rmse (y, y_hat):
-  ''' Root mean square error '''
+def mse(y, y_hat):
+  ''' Mean squared error '''
+  return ((y - y_hat)**2).mean()
+
+def rmse(y, y_hat):
+  ''' Root mean squared error '''
   return np.sqrt(((y - y_hat)**2).mean())

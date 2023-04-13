@@ -15,48 +15,52 @@ from sklearn.base import \
   BaseEstimator, RegressorMixin
 
 # Local imports
-from src.metrics.metrics import rmse
+from src.metrics.metrics import mse
 
 #
 class LinearRegressionGD(BaseEstimator, RegressorMixin):
     ''' Linear Regression via Gradient Decent (GD) '''
 
     #
-    def __init__(self, alpha=10**-5, max_generations = 10**5):
-        self.max_generations = max_generations
+    def __init__(self, alpha=10**-3, max_iter = 10**5):
+        self.max_iter = max_iter
         self.alpha = alpha
 
     #
     def fit(self, X, y, verbatim=False):
+        # Cleaning
+        self.costs = []
+
         # Auxiliary
-        M = X.shape[1]
+        _, m = X.shape
 
         # Initial weights
-        self.w = np.zeros(M)
+        self.w = np.zeros(m)
 
         # Initial Error
-        err = rmse(y, X @ self.w) 
+        self.costs.append(np.inf)
 
         # Main loop
-        for i in range(self.max_generations):
+        for i in range(self.max_iter):
             # Step
-            w_ = self.w + self.alpha * (y - self.w.T * X).mean(axis=0)
+            w_ = self.w + self.alpha * ((y - self.w.T * X) * X).sum(axis=0)
 
             # Step error
-            err_ = rmse(y, X @ w_)
+            err = mse(y, X @ w_)
 
             # 
-            if err < err_:
+            if self.costs[-1] <= err:
                 if verbatim:
                     print('-'*20)
                     print(f'Iteration: {i:>8}')
-                    print(f'Error: {err_:>12.5}')
+                    print(f'Error: {err:>12.5}')
                     print('-'*20)
-
                 
                 break
+            else:
+                print(err)
             
-            err = err_
+            self.costs.append(err)
             self.w = w_
 
     def predict(self, X, y=None):
